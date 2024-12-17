@@ -1,0 +1,37 @@
+// Datasource and Generator
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Transaction {
+  id           String   @id @default(uuid())
+  walletId     String
+  userId       String      // Add this to link Transaction to User
+  amount       Float
+  type         String
+  category     String
+  wallet       Wallet   @relation(fields: [walletId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model Wallet {
+  id           String         @id @default(uuid())
+  userId       String
+  balance      Float
+  user         User           @relation(fields: [userId], references: [id])
+  transactions Transaction[]  // Relation to Transaction
+}
+
+model User {
+  id           String         @id @default(uuid())
+  username     String         @unique
+  email        String         @unique
+  password     String
+  wallets      Wallet[]
+  transactions Transaction[]  // Relation with Transaction
+}
